@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct DataWeatherRow: View {
+struct DailyWeatherRow: View {
     // MARK: - PROPERTY
     var day: String
     var icon: String
@@ -71,7 +71,7 @@ struct DataWeatherRow: View {
                     
                             .padding(.leading,5)
                 }
-                .frame(width: geometry.size.width * 0.5)
+                .frame(width: geometry.size.width * 0.6)
                 
                 
             }
@@ -89,5 +89,5 @@ struct DataWeatherRow: View {
 }
 
 #Preview {
-    DataWeatherRow(day: "Wednesday", icon: "cloud.fill", weatherTendency: "65%", lTemp: "22", hTemp: "31")
+    DailyWeatherRow(day: "Wednesday", icon: "cloud.fill", weatherTendency: "65%", lTemp: "22", hTemp: "31")
 }

@@ -7,12 +7,26 @@
 
 import SwiftUI
 
-struct WeatherInfoCardView: View {
+struct WeatherInfoCardView<Content: View>: View {
+    let content: Content
+    // The initializer accpepts a closure that returns a view
+    init(@ViewBuilder content:() -> Content) {
+        self.content = content()
+    }
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        HStack{
+            VStack{
+                content // the injected content goes here
+            }
+        }
+        .padding(.vertical,10)
+        .background(
+            RoundedRectangle(cornerRadius: 15) // Creates the card shape
+                .fill(.ultraThinMaterial)
+        )
+        .colorScheme(.dark)
+        .padding(.horizontal,16)
     }
 }
 
-#Preview {
-    WeatherInfoCardView()
-}
+

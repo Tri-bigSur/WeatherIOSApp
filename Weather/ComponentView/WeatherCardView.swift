@@ -15,31 +15,44 @@ struct WeatherCardView: View {
     // MARK: - BODY
     var body: some View {
         
+//        ZStack{
+//            Image(weatherData.currentIconCode)
+//                .resizable()
+//                .scaledToFit()
+                
             HStack{
-                VStack(alignment:.leading,spacing: 15){
-                    Text("\(weatherData.cityName)")
+                VStack(alignment:.leading,spacing: 10 ){
+                    Text("\(weatherData.name)")
+                        .lineLimit(1)
+                    //                    Text("Bình Tân")
                         .font(.system(size: 25,weight: .semibold))
                         
-                    Text("11:55")
+                    Text("\(weatherData.localObservationTime)")
+                    //                    Text("9:00")
                         .fontWeight(.regular)
                     Spacer()
                     
-                    Text("\(weatherData.weatherCondition)")
+                    Text("\(weatherData.weather.first?.weatherDescription ?? "Getting data...")")
+                        .font(.system(size: 18,weight: .regular))
+                    
                 }
                 .padding(.leading,10)
                 Spacer()
-                VStack(){
-                    Text("29°C")
-                        .font(.system(size: 35, weight: .regular))
+                VStack(alignment:.center){
+                    Text("\(weatherData.main.celcius)°")
                     
-                        Spacer()
+                        .font(.system(size: 45, weight: .regular))
+                    
+                    Spacer()
                     
                     HStack{
-                        Text("H: 32°C")
-                        Text("L: 23°C")
-                            
+                        Text("\(weatherData.main.celciusMax)°")
+                        Text("\(weatherData.main.celciusMin)°")
+                        //                        Text("C:36")
+                        
                     }
-                     .fontWeight(.semibold)
+                    .fontWeight(.semibold)
+//                    .frame(width: .infinity)
                 }
                 
             }
@@ -47,13 +60,19 @@ struct WeatherCardView: View {
             .fixedSize(horizontal: false, vertical: true)
             .padding()
             .foregroundStyle(.white)
-            .background(Color.blue)
+            .background(
+                Image(weatherData.currentIconCode)
+                    .resizable()
+                
+            )
             .cornerRadius(15)
+//        }
+        //Zstack
         
         
     }
 }
 
 #Preview {
-    WeatherCardView(weatherData: WeatherModel(cityName: "Tân An", weatherCondition: "Clear Sky"))
+    WeatherCardView(weatherData: WeatherModel.mock)
 }

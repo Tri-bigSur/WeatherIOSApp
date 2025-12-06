@@ -1,8 +1,47 @@
-//
-//  testData.json
-//  Weather
-//
-//  Created by warbo on 17/11/25.
-//
+{
 
-import Foundation
+  "coord": {
+    "lon": 106.414,
+    "lat": 10.5359
+  },
+  "weather": [
+    {
+      "id": 804,
+      "main": "Clouds",
+      "description": "overcast clouds",
+      "icon": "03n"
+    }
+  ],
+  "base": "",
+  "main": {
+      "temp": 298.95,
+      "feels_like": 298.95,
+      "temp_min": 298.95,
+      "temp_max": 298.95,
+      "pressure": 1000,
+      "humidity": 50,
+      "sea_level": 1000,
+      "grnd_level": 1000
+    },
+  "visibility": 10000,
+  "wind": {
+    "speed": 2.44,
+    "deg": 24,
+    "gust": 4
+  },
+  "clouds": {
+    "all": 92
+  },
+  "dt": 0,
+  "sys": {
+    "country": "VN",
+    "sunrise": 1763333428,
+    "sunset": 1763375300
+  },
+  "timezone": 25200,
+  "id": 1567069,
+  "name": "Tan An",
+  "cod": 200
+  
+  
+}
