@@ -63,6 +63,7 @@ struct WeatherCardView: View {
             .background(
                 Image(weatherData.currentIconCode)
                     .resizable()
+                    .scaledToFill()
                 
             )
             .cornerRadius(15)
