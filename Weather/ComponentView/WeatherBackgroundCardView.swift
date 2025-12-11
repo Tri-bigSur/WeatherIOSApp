@@ -17,6 +17,7 @@ struct WeatherInfoCardView<Content: View>: View {
         HStack{
             VStack{
                 content // the injected content goes here
+                    .padding(20)
             }
         }
         .padding(.vertical,10)
