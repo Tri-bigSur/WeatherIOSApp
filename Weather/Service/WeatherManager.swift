@@ -15,6 +15,7 @@ class WeatherManager: ObservableObject{
         let citiesToUpdate = weatherFavCities.map{$0.name}
         for city in citiesToUpdate{
             fetchAndReplaceLocation(city: city)
+            
         }
     }
     
@@ -22,6 +23,7 @@ class WeatherManager: ObservableObject{
         apiService.fetchWeatherData(for: city){ [weak self] result in
             guard let self = self else {return}
             if case .success(let newLocation) = result{
+                print("\(newLocation.localObservationTime)")
                 DispatchQueue.main.async {
                     if let index = self.weatherFavCities.firstIndex(where: {$0.name == newLocation.name}){
                         self.weatherFavCities[index] = newLocation
@@ -35,7 +37,7 @@ class WeatherManager: ObservableObject{
     }
     
     func fetchLocationForSheet(city: String,completion: @escaping (Result<WeatherModel,WeatherAPIError>) -> Void){
-        apiService.fetchWeatherData(for: city, completion: completion )
+        apiService.fetchWeatherData(for: city, completion: completion)
     }
     
     func addFavCity(_ newCity: WeatherModel){

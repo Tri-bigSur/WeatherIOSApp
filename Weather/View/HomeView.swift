@@ -20,6 +20,7 @@ struct HomeView: View {
     @Environment(\.isSearching) private var isSearching
     @State private var weatherStatic:WeatherModel = WeatherModel.mock
     @StateObject private var searchService = LocationSearchService()
+    @Namespace var animation
     
 //    var filteredSuggestion: [String]{
 //        if searchText.isEmpty{
@@ -74,96 +75,119 @@ struct HomeView: View {
     // BODY
     var body: some View {
         
-        NavigationView{
-            
-            
-            List {
+        ZStack{
+            NavigationView{
                 
                 
-                ForEach(weatherManager.weatherFavCities){ weatherItem in
+                List {
                     
-                    WeatherCardView(weatherData: weatherItem)
-                        .onTapGesture {
-                            findCityCard(city: weatherItem.name)
-                            
+                    
+                    ForEach(weatherManager.weatherFavCities){ weatherItem in
+                        
+                        WeatherCardView(weatherData: weatherItem,nameSpace: animation, isModal: selectedLocation?.name == weatherItem.name)
+                            .onTapGesture {
+                                withAnimation(.easeOut){
+                                    findCityCard(city: weatherItem.name)
+                                }
+                               
+                                
+                                
+                            }
+                        
+                        
+                        //                                                                    .padding()
+                        
+                        //                                                if let weather = weatherService.weatherData {
+                        //                                                                // Pass the single object directly to the view
+                        //
+                        //                                                            } else {
+                        //                                                                Text("Enter a city name to search for weather.")
+                        //                                                                    .foregroundColor(.gray)
+                        //                                                            }
+                        //
+                        //
+                    }
+                    //
+                    //
+                    .onDelete(perform: deleteItem)
+                    .listRowSeparator(.hidden)
+                    //                    }
+                   
+                    
+                    
+                    
+                    
+                }
+                .refreshable{
+                    weatherManager.refreshAllWeather()
+                }
+                .listStyle(.plain)
+                .blur(radius: isSearchFocused ? 10: 0)
+                .overlay {
+                    if isSearchFocused {
+                        Color.black.opacity(0.15).ignoresSafeArea(.all)
+                        // Note: You may not need the onTapGesture here,
+                        // as the system's "Cancel" button handles dismissal.
+                    }
+                }
+                .navigationTitle("Weather")
+                
+                // search bar
+                .searchable(text: $searchText,placement: .navigationBarDrawer(displayMode: .always),prompt: "Search name of city/airport"){
+                    ForEach(searchService.completions,id:\.self){ completion in
+                        Text(completion.title)
+                            .searchCompletion(completion.title)
+                            .foregroundStyle(.primary)
+                            .onTapGesture {
+                                searchText = completion.title
+                                self.showingSheet = true
+                                self.searchWeatherCity(city: searchText)
+                                
+                            }
+                        
+                    }
+                }
+                
+                // update search service every time search text change
+                .onChange(of: searchText){ oldValue, newValue in
+                    searchService.updateQuery(fragment: newValue)
+                }
+                .focused($isSearchFocused)
+                
+            }
+            .sheet(isPresented: $showingSheet){
+                if let location = searchedLocation{
+                    WeatherDetailView(weather: location, namespace: animation)
+                }else{
+                    Text("Fetching Weather...")
+                }
+            }
+            if let location = selectedLocation {
+                WeatherDetailView(weather: location, namespace: animation)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    .environment(\.dismissModal){
+                        withAnimation(.easeOut){
+                            self.selectedLocation = nil
                         }
-                    
-                    
-                    //                                                                    .padding()
-                    
-                    //                                                if let weather = weatherService.weatherData {
-                    //                                                                // Pass the single object directly to the view
-                    //
-                    //                                                            } else {
-                    //                                                                Text("Enter a city name to search for weather.")
-                    //                                                                    .foregroundColor(.gray)
-                    //                                                            }
-                    //
-                    //
-                }
-                //
-                //
-                .onDelete(perform: deleteItem)
-                .listRowSeparator(.hidden)
-                //                    }
+                    }
                 
-                
-                
-                
-                
-            }
-            .onAppear{
-                weatherManager.refreshAllWeather()
-            }
-            .listStyle(.plain)
-            .blur(radius: isSearchFocused ? 10: 0)
-            .overlay {
-                if isSearchFocused {
-                    Color.black.opacity(0.15).ignoresSafeArea(.all)
-                    // Note: You may not need the onTapGesture here,
-                    // as the system's "Cancel" button handles dismissal.
-                }
-            }
-            .navigationTitle("Weather")
-            
-            // search bar
-            .searchable(text: $searchText,placement: .navigationBarDrawer(displayMode: .always),prompt: "Search name of city/airport"){
-                ForEach(searchService.completions,id:\.self){ completion in
-                    Text(completion.title)
-                        .searchCompletion(completion.title)
-                        .foregroundStyle(.black)
-                        .onTapGesture {
-                            searchText = completion.title
-                            self.showingSheet = true
-                            self.searchWeatherCity(city: searchText)
-                            
-                        }
-                    
-                }
-            }
-            
-            // update search service every time search text change
-            .onChange(of: searchText){ oldValue, newValue in
-                searchService.updateQuery(fragment: newValue)
-            }
-            .focused($isSearchFocused)
-            
-        }
-        .sheet(isPresented: $showingSheet){
-            if let location = searchedLocation{
-                WeatherDetailView(weather: location)
-            }else{
-                Text("Fetching Weather...")
             }
         }
-        .fullScreenCover(item: $selectedLocation){ location in
-            WeatherDetailView(weather: location)
-            
-        }
+        
+       
             
             
             
         
+    }
+}
+struct DismissModalActionKey: EnvironmentKey{
+    static let defaultValue: () -> Void = {}
+}
+extension EnvironmentValues {
+    var dismissModal: () -> Void {
+        get{self[DismissModalActionKey.self]}
+        set{self[DismissModalActionKey.self] = newValue}
     }
 }
 

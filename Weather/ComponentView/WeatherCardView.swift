@@ -9,8 +9,9 @@ import SwiftUI
 
 struct WeatherCardView: View {
     // MARK: - PROPERTY
-    @State var weatherData: WeatherModel
-    
+     let weatherData: WeatherModel
+    let nameSpace: Namespace.ID
+    let isModal: Bool
     
     // MARK: - BODY
     var body: some View {
@@ -64,8 +65,10 @@ struct WeatherCardView: View {
                 Image(weatherData.currentIconCode)
                     .resizable()
                     .scaledToFill()
+                    .matchedGeometryEffect(id: weatherData.id, in: nameSpace)
                 
             )
+            .opacity(isModal ? 0 : 1)
             .cornerRadius(15)
 //        }
         //Zstack
@@ -75,5 +78,6 @@ struct WeatherCardView: View {
 }
 
 #Preview {
-    WeatherCardView(weatherData: WeatherModel.mock)
+    @Namespace var previewNamespace
+    WeatherCardView(weatherData: WeatherModel.mock,nameSpace: previewNamespace, isModal: false)
 }

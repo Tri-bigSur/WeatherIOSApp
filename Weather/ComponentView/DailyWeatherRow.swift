@@ -76,9 +76,10 @@ struct DailyWeatherRow: View {
                 
             }
             .frame(maxWidth: .infinity,alignment: .leading)
+            
         }
-        .frame(height: 50)
-        
+        .frame(height: 20)
+        .padding(.bottom,15)
         
         
         
