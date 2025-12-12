@@ -8,11 +8,32 @@
 import SwiftUI
 
 struct FeelingElementView_: View {
+    let LocationWeather: WeatherModel
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        WeatherInfoCardView{
+            VStack(alignment:.leading){
+                HStack{
+                    Image(systemName: "thermometer")
+                    Text("FEELING")
+                        .modifier(LabelCardText())
+                    Spacer()
+                }
+                
+                HStack{
+                    VStack(alignment:.leading){
+                        Text("\(LocationWeather.main.celciusFeelsLike)")
+                            .modifier(TitleText())
+                            .padding(.vertical,7)
+                        Text("Wind is making you feel cooler.")
+                        Spacer()
+                    }
+                    
+                }
+            }
+        }
     }
 }
 
 #Preview {
-    FeelingElementView_()
+    FeelingElementView_(LocationWeather: WeatherModel.mock)
 }

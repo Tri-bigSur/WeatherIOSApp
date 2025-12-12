@@ -8,11 +8,31 @@
 import SwiftUI
 
 struct HumidityElementView: View {
+    let locationWeather: WeatherModel
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        WeatherInfoCardView{
+            HStack{
+                Image(systemName: "humidity.fill")
+                Text("HUMIDITY")
+                    .modifier(LabelCardText())
+//                                        .padding(.vertical,5)
+                Spacer()
+                
+            }
+            VStack(alignment:.leading){
+                Text("\(locationWeather.main.humidity)%")
+                    .modifier(TitleText())
+                    .padding(.vertical,5)
+                    
+                
+                Text("Dew point is 16º at this time.")
+//                                    Spacer()
+            }
+            
+        }
     }
 }
 
 #Preview {
-    HumidityElementView()
+    HumidityElementView(locationWeather: WeatherModel.mock)
 }

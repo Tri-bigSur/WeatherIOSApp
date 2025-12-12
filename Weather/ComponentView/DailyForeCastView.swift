@@ -9,7 +9,37 @@ import SwiftUI
 
 struct DailyForeCastView: View {
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        WeatherInfoCardView{
+            VStack{
+                HStack{
+                    Image(systemName: "calendar")
+                    Text("FORECAST IN 10 DAYS")
+                        .modifier(LabelCardText())
+                    Spacer()
+                }
+                
+                
+            }
+            
+
+            Divider()
+                .overlay(.gray)
+            DailyWeatherRow(day: "Wednesday", icon: "cloud.drizzle.fill", weatherTendency: "", lTemp: "23", hTemp: "31")
+                
+                                Divider()
+                                    .overlay(.gray)
+                                
+            DailyWeatherRow(day: "Today", icon: "cloud.fill", weatherTendency: "65%", lTemp: "22", hTemp: "31")
+            
+                                Divider()
+                                    .overlay(.gray)
+            DailyWeatherRow(day: "Thursday", icon: "cloud.fill", lTemp: "20", hTemp: "28")
+            
+            
+            
+            
+            
+        }
     }
 }
 

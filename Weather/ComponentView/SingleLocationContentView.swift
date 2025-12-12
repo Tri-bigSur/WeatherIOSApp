@@ -8,11 +8,100 @@
 import SwiftUI
 
 struct SingleLocationContentView: View {
+    @Environment(\.dismissModal) var dismissModal
+    @Environment(\.dismiss) var dismiss
+    @EnvironmentObject var weatherManager: WeatherManager
+    let isPresentedAsSheet: Bool
+    let locationWeather: WeatherModel
+    var isCityAdded: Bool{
+        weatherManager.weatherFavCities.contains{ location in
+            location.name == locationWeather.name
+            
+        }
+    }
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        ScrollView(.vertical,showsIndicators: false){
+            VStack{
+                if isPresentedAsSheet{
+                    HStack{
+                        Button(
+                            "Cancel"
+                                
+                        ){
+                            dismiss()
+                        }
+                        .font(.system(size: 20))
+                        .foregroundStyle(.white)
+                        .buttonStyle(ScaleButtonStyle())
+                            
+                        Spacer()
+                       
+                        if !isCityAdded{
+                            Button(action:{
+                            weatherManager.addFavCity(locationWeather)
+                                dismiss()
+                                
+                            }){
+                                Text("Add")
+                                    .font(.system(size: 20,weight: .semibold))
+                                    .foregroundStyle(.white)
+                                
+                            }
+                            .buttonStyle(ScaleButtonStyle())
+                            
+                            
+                        }
+
+                    }
+                    .padding(20)
+                    
+                }
+                
+                // Location Header
+                LocationHeaderView(locationWeather: locationWeather)
+//                        .foregroundStyle(.white)
+//                        Spacer()
+                HourlyForeCastView(locationWeather: locationWeather)
+                DailyForeCastView()
+                WindMapView(locationWeather: locationWeather)
+                HStack{
+                    ForesightElementView(locationWeather: locationWeather)
+                    HumidityElementView(locationWeather: locationWeather)
+                
+                }
+                WindCompassView(locationWeather: locationWeather)
+                                
+                
+               
+                // MARK: - Map View
+                
+                HStack(alignment:.center){
+                    FeelingElementView_(LocationWeather: locationWeather)
+                    UVElementView()
+                        
+                        
+                        
+                        
+                        
+                    
+                }
+                // MARK: - WIND SPEED
+                
+                
+               
+
+            } // MARK: - General Vstack
+            .frame(maxWidth:.infinity)
+            
+                        
+                        }
+        .padding(.bottom,80)
+//        .background(.gray)
     }
 }
 
 #Preview {
-    SingleLocationContentView()
+    let mockManager = WeatherManager()
+    SingleLocationContentView(isPresentedAsSheet: true, locationWeather: WeatherModel.mock)
+        .environmentObject(mockManager)
 }

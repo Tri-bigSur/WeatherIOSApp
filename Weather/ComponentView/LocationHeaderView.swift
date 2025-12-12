@@ -8,11 +8,28 @@
 import SwiftUI
 
 struct LocationHeaderView: View {
+    let locationWeather: WeatherModel
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        VStack{
+            Text(locationWeather.name)
+                .font(.largeTitle)
+            
+            Text("\(locationWeather.main.celcius)º")
+                .font(.system(size: 40,weight: .thin))
+            
+            Text(locationWeather.weather.first?.weatherDescription ?? "Getting data...")
+                .fontWeight(.medium)
+                .foregroundStyle(.secondary)
+            HStack{
+                Text("H:\(locationWeather.main.celciusMax)°")
+                Text("L:\(locationWeather.main.celciusMin)°")
+            }
+            
+        }
+        .foregroundStyle(.white)
     }
 }
 
 #Preview {
-    LocationHeaderView()
+    LocationHeaderView(locationWeather:  WeatherModel.mock)
 }

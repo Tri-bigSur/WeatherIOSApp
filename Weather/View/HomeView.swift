@@ -157,13 +157,13 @@ struct HomeView: View {
             }
             .sheet(isPresented: $showingSheet){
                 if let location = searchedLocation{
-                    WeatherDetailView(weather: location, namespace: animation)
+                    WeatherDetailView(weather: location, isPresentedAsSheet: true, namespace: animation )
                 }else{
                     Text("Fetching Weather...")
                 }
             }
             if let location = selectedLocation {
-                WeatherDetailView(weather: location, namespace: animation)
+                WeatherDetailView(weather: location, isPresentedAsSheet: false, namespace: animation)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                     .environment(\.dismissModal){
                         withAnimation(.easeOut){

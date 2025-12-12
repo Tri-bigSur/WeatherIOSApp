@@ -9,17 +9,23 @@ import SwiftUI
 
 struct FixedTapView: View {
     var totalItems: Int
-    
+    private let activeColor: Color = .white
+    private let inActiveColor: Color = .gray
+    @Binding var currentIndex: Int
     var body: some View {
         HStack(alignment:.center){
             Image(systemName: "map")
                 .foregroundStyle(.white)
                 .font(.system(size: 25,weight: .semibold))
             Spacer()
-            ForEach(1..<totalItems + 1, id: \.self){_ in
+            ForEach(0..<totalItems, id: \.self){ index in
+                let dotColor = index == currentIndex ? Color.white : Color.gray
                 Image(systemName: "circle.fill")
                     .font(.system(size: 8))
-                    .foregroundColor(.gray)
+                    .foregroundColor(dotColor)
+                    .onTapGesture {
+                        currentIndex = index
+                    }
             }
             Spacer()
             Image(systemName: "list.bullet")
@@ -32,5 +38,5 @@ struct FixedTapView: View {
 }
 
 #Preview {
-    FixedTapView(totalItems: 3)
+    FixedTapView(totalItems: 3, currentIndex: .constant(1))
 }

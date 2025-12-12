@@ -8,11 +8,29 @@
 import SwiftUI
 
 struct ForesightElementView: View {
+    let locationWeather: WeatherModel
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        WeatherInfoCardView{
+            HStack{
+               Image(systemName: "eye.fill")
+               Text("FORESIGHT")
+                    .modifier(LabelCardText())
+                Spacer()
+                
+            }
+            HStack{
+                VStack(alignment:.leading){
+                    Text("\(locationWeather.visibilityInMiles) miles")
+                        .modifier(TitleText())
+                        .padding(.vertical,5)
+                    Text("Foresight is completely clear.")
+                }
+//                                    Spacer()
+            }
+        }
     }
 }
 
 #Preview {
-    ForesightElementView()
+    ForesightElementView(locationWeather: WeatherModel.mock)
 }
