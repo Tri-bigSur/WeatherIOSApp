@@ -26,19 +26,19 @@ struct SingleLocationContentView: View {
                     HStack{
                         Button(
                             "Cancel"
-                                
+                            
                         ){
                             dismiss()
                         }
                         .font(.system(size: 20))
                         .foregroundStyle(.white)
                         .buttonStyle(ScaleButtonStyle())
-                            
+                        
                         Spacer()
-                       
+                        
                         if !isCityAdded{
                             Button(action:{
-                            weatherManager.addFavCity(locationWeather)
+                                weatherManager.addFavCity(locationWeather)
                                 dismiss()
                                 
                             }){
@@ -51,7 +51,7 @@ struct SingleLocationContentView: View {
                             
                             
                         }
-
+                        
                     }
                     .padding(20)
                     
@@ -59,16 +59,33 @@ struct SingleLocationContentView: View {
                 
                 // Location Header
                 LocationHeaderView(locationWeather: locationWeather)
-//                        .foregroundStyle(.white)
-//                        Spacer()
+                //                        .foregroundStyle(.white)
+                //                        Spacer()
                 HourlyForeCastView(locationWeather: locationWeather)
                 DailyForeCastView()
-                WindMapView(locationWeather: locationWeather)
+//                if !isPresentedAsSheet{
+                    WeatherInfoCardView{
+                        VStack{
+                            HStack{
+                                               Image(systemName: "wind")
+                                               Text("WIND MAP")
+                           
+                                                   .modifier(LabelCardText())
+                                               Spacer()
+                                           }
+                            WindMapView(locationWeather: locationWeather, isFullScreen: false)
+                        }
+                        
+                    }
+                    
+//                }
+                
                 HStack{
                     ForesightElementView(locationWeather: locationWeather)
                     HumidityElementView(locationWeather: locationWeather)
                 
                 }
+                
                 WindCompassView(locationWeather: locationWeather)
                                 
                 
@@ -92,16 +109,17 @@ struct SingleLocationContentView: View {
 
             } // MARK: - General Vstack
             .frame(maxWidth:.infinity)
+            .padding(.bottom,isPresentedAsSheet ? 0 : 100)
             
                         
                         }
-        .padding(.bottom,80)
-//        .background(.gray)
+//        .padding(.bottom, isPresentedAsSheet ? 0 : 80)
+        .background(.gray)
     }
 }
 
 #Preview {
     let mockManager = WeatherManager()
-    SingleLocationContentView(isPresentedAsSheet: true, locationWeather: WeatherModel.mock)
+    SingleLocationContentView(isPresentedAsSheet: false, locationWeather: WeatherModel.mock)
         .environmentObject(mockManager)
 }

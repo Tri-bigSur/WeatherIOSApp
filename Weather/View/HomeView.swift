@@ -181,15 +181,15 @@ struct HomeView: View {
         
     }
 }
-struct DismissModalActionKey: EnvironmentKey{
-    static let defaultValue: () -> Void = {}
-}
-extension EnvironmentValues {
-    var dismissModal: () -> Void {
-        get{self[DismissModalActionKey.self]}
-        set{self[DismissModalActionKey.self] = newValue}
-    }
-}
+//struct DismissModalActionKey: EnvironmentKey{
+//    static let defaultValue: () -> Void = {}
+//}
+//extension EnvironmentValues {
+//    var dismissModal: () -> Void {
+//        get{self[DismissModalActionKey.self]}
+//        set{self[DismissModalActionKey.self] = newValue}
+//    }
+//}
 
 #Preview {
     let mockmanager = WeatherManager()

@@ -14,6 +14,7 @@ struct WeatherDetailView: View {
     @EnvironmentObject var weatherManager: WeatherManager
     @Environment(\.dismissModal) var dismissModal
     @Environment(\.dismiss) var dismiss
+    
     @State  var currentIndex: Int = 0
     
     @State private var isScrollEnabled = true
@@ -21,6 +22,8 @@ struct WeatherDetailView: View {
     @State private var currentScale: CGFloat = 1.0
     @State private var isDragging: Bool = false
     @State private var scrollOffset: CGFloat = 0
+    // MARK: - Map View Property
+    @State private var showingFullMap: Bool = false 
     @State private var region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 10.53589000, longitude: 106.41366000), span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1))
     @State private var annotationItems = [
         AnnotationItem(coordinate: CLLocationCoordinate2D(latitude: 10.53589000, longitude: 106.41366000))
@@ -86,60 +89,75 @@ struct WeatherDetailView: View {
                 }
                 
             }
-        
-        if isPresentedAsSheet{
-            SingleLocationContentView(isPresentedAsSheet: isPresentedAsSheet, locationWeather: weather)
-                .background(
-                    Image("\(weather.weather.first?.icon ?? "01d")")
-                )
-        }else{
-            if weatherManager.weatherFavCities.isEmpty{
-                Text("No Favorite cities has been added yet!")
-            }else{
-                GeometryReader{ geo in
-                    ZStack(alignment:.bottom){
-                        //                VStack{
-                        Image("\(weather.weather.first?.icon ?? "01d")")
-                            .resizable()
-                            .scaledToFill()
-                        
-                            .frame(maxWidth: geo.size.width,maxHeight: .infinity)
-                        
-                        //                    }
-                        //                    .frame(maxWidth: geo.size.width)
-                        TabView(selection:$currentIndex){
-                            ForEach(weatherManager.weatherFavCities.indices,id:\.self){ index in
-                                SingleLocationContentView(isPresentedAsSheet: isPresentedAsSheet, locationWeather: weatherManager.weatherFavCities[index])
-//                                    .padding(.bottom,80)
-                                    .tag(index)
+        ZStack{
+            
+            
+            Group{
+                if isPresentedAsSheet{
+                    SingleLocationContentView(isPresentedAsSheet: isPresentedAsSheet, locationWeather: weather)
+                        .background(
+                            Image("\(weather.weather.first?.icon ?? "01d")")
+                        )
+                }else{
+                    if weatherManager.weatherFavCities.isEmpty{
+                        Text("No Favorite cities has been added yet!")
+                    }else{
+                        GeometryReader{ geo in
+                            ZStack(alignment:.bottom){
+                                //                VStack{
+                                Image("\(weatherManager.weatherFavCities[currentIndex].weather.first?.icon ?? "01d")")
+                                    .resizable()
+                                    .scaledToFill()
+                                
+                                    .frame(maxWidth: geo.size.width,maxHeight: .infinity)
+                                
+                                //                    }
+                                //                    .frame(maxWidth: geo.size.width)
+                                TabView(selection:$currentIndex){
+                                    ForEach(weatherManager.weatherFavCities.indices,id:\.self){ index in
+                                        SingleLocationContentView(isPresentedAsSheet: isPresentedAsSheet, locationWeather: weatherManager.weatherFavCities[index])
+                                        //                                    .padding(.bottom,80)
+                                            .tag(index)
+                                        
+                                    }
+                                    
+                                    //Scroll View
+                                    .scrollDisabled(!isScrollEnabled)
+                                    //
+                                }
+                                .tabViewStyle(.page(indexDisplayMode: .never))
+                                
+                                
+                                
+                                FixedTapView(totalItems: weatherManager.weatherFavCities.count, showingFullMap: $showingFullMap, currentIndex: $currentIndex, dismissAction: dismissModal)
+                                    .frame(height: 80)
+                                    .background(.ultraThinMaterial)
+                                    .colorScheme(.dark)
                                 
                             }
+                        
+                            .cornerRadius(dragOffSet)
+                            .scaleEffect(currentScale)
+                            .offset(y:dragOffSet )
+                            .gesture(drag)
+                            .transition(.identity)
+                            .ignoresSafeArea(.all)
                             
-                            //Scroll View
-                            .scrollDisabled(!isScrollEnabled)
-//
                         }
-                        .tabViewStyle(.page(indexDisplayMode: .never))
-                        
-                        
-                        
-                        FixedTapView(totalItems: weatherManager.weatherFavCities.count, currentIndex: $currentIndex)
-                            .frame(height: 80)
-                            .background(.ultraThinMaterial)
-                            .colorScheme(.dark)
                        
+                        
                     }
-                    .cornerRadius(dragOffSet)
-                    .scaleEffect(currentScale)
-                    .offset(y:dragOffSet )
-                    .gesture(drag)
+                        
+                    
+                }// Zstack of Swipable Content
+            } // Group for sheet or full screen of WeatherDetailView
+            if showingFullMap {
+                FullScreenMapView(locationWeather: weatherManager.weatherFavCities[currentIndex], isPresented: $showingFullMap)
                     .transition(.identity)
-                    .ignoresSafeArea(.all)
-                }
             }
+                
             
-        }
-        
+        } // Zstack of etire view
         
         
         
@@ -166,6 +184,15 @@ struct ScrollOffsetKey: PreferenceKey {
     static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
         // We just take the latest reported value
         value = nextValue()
+    }
+}
+struct DismissModalActionKey: EnvironmentKey{
+    static let defaultValue: () -> Void = {}
+}
+extension EnvironmentValues {
+    var dismissModal: () -> Void {
+        get{self[DismissModalActionKey.self]}
+        set{self[DismissModalActionKey.self] = newValue}
     }
 }
 
