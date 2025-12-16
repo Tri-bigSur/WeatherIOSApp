@@ -82,7 +82,7 @@ struct HomeView: View {
                 List {
                     
                     
-                    ForEach(weatherManager.weatherFavCities){ weatherItem in
+                    ForEach(weatherManager.weatherFavCities){  weatherItem in
                         
                         WeatherCardView(weatherData: weatherItem,nameSpace: animation, isModal: selectedLocation?.name == weatherItem.name)
                             .onTapGesture {
@@ -157,7 +157,7 @@ struct HomeView: View {
             }
             .sheet(isPresented: $showingSheet){
                 if let location = searchedLocation{
-                    WeatherDetailView(weather: location, isPresentedAsSheet: true, namespace: animation )
+                    WeatherDetailView(weather: location, /*currentIndex: 0,*/ isPresentedAsSheet: true, namespace: animation)
                 }else{
                     Text("Fetching Weather...")
                 }

@@ -25,10 +25,10 @@ struct WeatherDetailView: View {
     // MARK: - Map View Property
     @State private var showingFullMap: Bool = false 
     @State private var region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 10.53589000, longitude: 106.41366000), span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1))
-    @State private var annotationItems = [
-        AnnotationItem(coordinate: CLLocationCoordinate2D(latitude: 10.53589000, longitude: 106.41366000))
-        
-    ]
+//    @State private var annotationItems = [
+//        AnnotationItem(coordinate: CLLocationCoordinate2D(latitude: 10.53589000, longitude: 106.41366000))
+//        
+//    ]
     let isPresentedAsSheet: Bool
     let collapseThreshold: CGFloat = 100
     let dismissThreshold: CGFloat = 100
@@ -174,6 +174,8 @@ struct WeatherDetailView: View {
 struct AnnotationItem: Identifiable {
     let id = UUID()
     var coordinate: CLLocationCoordinate2D
+    let name: String
+    let temp: Int
 }
 
 struct ScrollOffsetKey: PreferenceKey {

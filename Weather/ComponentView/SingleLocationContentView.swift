@@ -63,7 +63,7 @@ struct SingleLocationContentView: View {
                 //                        Spacer()
                 HourlyForeCastView(locationWeather: locationWeather)
                 DailyForeCastView()
-//                if !isPresentedAsSheet{
+                if !isPresentedAsSheet{
                     WeatherInfoCardView{
                         VStack{
                             HStack{
@@ -73,12 +73,15 @@ struct SingleLocationContentView: View {
                                                    .modifier(LabelCardText())
                                                Spacer()
                                            }
-                            WindMapView(locationWeather: locationWeather, isFullScreen: false)
+                            
+                                WindMapView(locationWeather: locationWeather, isFullScreen: false)
+                            
+                            
                         }
                         
                     }
                     
-//                }
+                }
                 
                 HStack{
                     ForesightElementView(locationWeather: locationWeather)
@@ -114,7 +117,7 @@ struct SingleLocationContentView: View {
                         
                         }
 //        .padding(.bottom, isPresentedAsSheet ? 0 : 80)
-        .background(.gray)
+//        .background(.gray)
     }
 }
 

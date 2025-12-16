@@ -6,7 +6,7 @@
 //
 
 import Foundation
-
+import MapKit
 
 // MARK: - WEATHER REPONSE MODE
 struct WeatherModel: Codable,Identifiable {
@@ -59,7 +59,9 @@ extension WeatherModel {
         var visibilityInMiles: Int {
             return Int(visibilityMeasurement.converted(to: .miles).value)
         }
-    
+    var coordinate: CLLocationCoordinate2D{
+        CLLocationCoordinate2D(latitude: coord.lat, longitude: coord.lon)
+    }
 }
 
 // MARK: - CLOUDS
