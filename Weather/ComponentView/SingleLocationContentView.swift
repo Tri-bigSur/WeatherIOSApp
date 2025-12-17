@@ -12,6 +12,7 @@ struct SingleLocationContentView: View {
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var weatherManager: WeatherManager
     let isPresentedAsSheet: Bool
+    @Binding var showingFullMap: Bool
     let locationWeather: WeatherModel
     var isCityAdded: Bool{
         weatherManager.weatherFavCities.contains{ location in
@@ -75,12 +76,13 @@ struct SingleLocationContentView: View {
                                            }
                             
                                 WindMapView(locationWeather: locationWeather, isFullScreen: false)
-                            
-                            
+                                
                         }
                         
                     }
-                    
+                    .onTapGesture{
+                        showingFullMap = true
+                    }
                 }
                 
                 HStack{
@@ -123,6 +125,6 @@ struct SingleLocationContentView: View {
 
 #Preview {
     let mockManager = WeatherManager()
-    SingleLocationContentView(isPresentedAsSheet: false, locationWeather: WeatherModel.mock)
+    SingleLocationContentView(isPresentedAsSheet: false, showingFullMap: .constant(false), locationWeather: WeatherModel.mock)
         .environmentObject(mockManager)
 }

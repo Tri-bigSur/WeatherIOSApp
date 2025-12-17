@@ -13,23 +13,25 @@ struct WindMapView: View {
     let isFullScreen: Bool
     @EnvironmentObject var weatherManager: WeatherManager
     @State private var region: MKCoordinateRegion
-    //    = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 10.53589000, longitude: 106.41366000), span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1))
     @State private var annotationItems: [AnnotationItem] = []
-    //    [
-    //        AnnotationItem(coordinate: CLLocationCoordinate2D(latitude: 10.53589000, longitude: 106.41366000))]
+    @State private var selectedAnnotationID: UUID?
+    
     init(locationWeather:WeatherModel, isFullScreen: Bool){
         self.locationWeather = locationWeather
         self.isFullScreen = isFullScreen
         let initialRegion =  MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: locationWeather.coord.lat, longitude: locationWeather.coord.lon), span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1))
+        
         _region = State(initialValue: initialRegion)
-        let initialAnnotation = AnnotationItem(coordinate: CLLocationCoordinate2D(latitude: locationWeather.coord.lat, longitude: locationWeather.coord.lon), name: locationWeather.name,temp:locationWeather.main.celcius)
+        
+        let initialAnnotation = AnnotationItem(coordinate: CLLocationCoordinate2D(latitude: locationWeather.coord.lat, longitude: locationWeather.coord.lon), name: locationWeather.name,temp:locationWeather.main.celcius,sunrise: locationWeather.sys.sunrise,sunset: locationWeather.sys.sunset,dt: locationWeather.dt)
         _annotationItems = State(initialValue: [initialAnnotation])
+        
         
         
     }
     func updateLocation(from favoriteCities: [WeatherModel]){
         let newAnnotation = favoriteCities.map{ city in
-            return AnnotationItem(coordinate: city.coordinate, name: city.name,temp:city.main.celcius)
+            return AnnotationItem(coordinate: city.coordinate, name: city.name,temp:city.main.celcius,sunrise: city.sys.sunrise,sunset: city.sys.sunset,dt: city.dt)
             
         }
         self.annotationItems = newAnnotation
@@ -47,19 +49,36 @@ struct WindMapView: View {
                 
             Map(
                 coordinateRegion: $region ,
+                interactionModes: isFullScreen ? .all : [],
                 annotationItems: annotationItems,
                 annotationContent: { item in
                                         MapAnnotation(
                                             coordinate: item.coordinate,
-                                            anchorPoint: isCurrentLocation(item) ? CGPoint(x: 0.5, y: 1.0) : CGPoint(x: 0.5, y: 0.5)
+                                            anchorPoint: (selectedAnnotationID == item.id) ? CGPoint(x: 0.5, y: 1.0) : CGPoint(x: 0.5, y: 0.5)
                                             
                                         ) {
-                                            if isCurrentLocation(item){
-                                                CustomPinView(temp: item.temp, cityName: item.name)
-                                            }else{
-                                                FavoriteCityMaker(temp: item.temp, cityName: item.name)
+                                            let currentColor = getThemeColor(for: item)
+                                            let weatherIcon = getWeatherIcon(for: item)
+                                            VStack{
+                                                if selectedAnnotationID == item.id && isFullScreen{
+                                                    CustomPinView(temp: item.temp, cityName: item.name,themeColor:currentColor,weatherIcon: weatherIcon)
+                                                        .transition(.scale.combined(with: .opacity))
+                                                    
+                                                }else{
+                                                    if region.span.latitudeDelta < 2.0{
+                                                        FavoriteCityMaker(temp: item.temp, cityName: item.name,themeColor:currentColor)
+                                                            .transition(.opacity.animation(.easeInOut))
+                                                    }
+                                                }
                                             }
-                                            
+                                            .onTapGesture {
+                                                withAnimation(.spring()){
+                                                    selectedAnnotationID = item.id
+                                                }
+                                                    
+
+                                            }
+                                                
                                             
                                         }
                                   
@@ -78,7 +97,9 @@ struct WindMapView: View {
             
             .onAppear{
                 updateLocation(from: weatherManager.weatherFavCities)
-                
+                if let currentCity = annotationItems.first(where: {isCurrentLocation($0)}){
+                    selectedAnnotationID = currentCity.id
+                }
                    
                 }
                 .cornerRadius(10)
@@ -89,7 +110,37 @@ struct WindMapView: View {
 //        }
     }
 }
+extension WindMapView{
+    private func getThemeColor(for item: AnnotationItem) -> Color {
+        if item.dt >= item.sunrise && item.dt <= item.sunset {
+            return Color.morningBlueColor
+        }else {
+            return Color.nightDarkColor
+        }
+       
+    }
+    private func getWeatherIcon(for item: AnnotationItem) -> String {
+        if item.dt >= item.sunrise && item.dt <= item.sunset {
+            return "sun.max.fill"
+        }else{
+            return "moon.stars.fill"
+        }
+    }
+}
+extension Color{
+    static  let morningBlueColor = Color("ColorAnnotationDay")
+    static  let nightDarkColor = Color("ColorAnnotationNight")
+}
 
+struct AnnotationItem: Identifiable {
+    let id = UUID()
+    var coordinate: CLLocationCoordinate2D
+    let name: String
+    let temp: Int
+    let sunrise: Int
+    let sunset: Int
+    let dt: Int
+}
 
 #Preview {
     WindMapView(locationWeather: WeatherModel.mock, isFullScreen: true)

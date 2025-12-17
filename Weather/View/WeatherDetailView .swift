@@ -94,7 +94,7 @@ struct WeatherDetailView: View {
             
             Group{
                 if isPresentedAsSheet{
-                    SingleLocationContentView(isPresentedAsSheet: isPresentedAsSheet, locationWeather: weather)
+                    SingleLocationContentView(isPresentedAsSheet: isPresentedAsSheet, showingFullMap: $showingFullMap, locationWeather: weather)
                         .background(
                             Image("\(weather.weather.first?.icon ?? "01d")")
                         )
@@ -115,7 +115,7 @@ struct WeatherDetailView: View {
                                 //                    .frame(maxWidth: geo.size.width)
                                 TabView(selection:$currentIndex){
                                     ForEach(weatherManager.weatherFavCities.indices,id:\.self){ index in
-                                        SingleLocationContentView(isPresentedAsSheet: isPresentedAsSheet, locationWeather: weatherManager.weatherFavCities[index])
+                                        SingleLocationContentView(isPresentedAsSheet: isPresentedAsSheet, showingFullMap: $showingFullMap, locationWeather: weatherManager.weatherFavCities[index])
                                         //                                    .padding(.bottom,80)
                                             .tag(index)
                                         
@@ -171,12 +171,7 @@ struct WeatherDetailView: View {
         
     }
 
-struct AnnotationItem: Identifiable {
-    let id = UUID()
-    var coordinate: CLLocationCoordinate2D
-    let name: String
-    let temp: Int
-}
+
 
 struct ScrollOffsetKey: PreferenceKey {
     // The default value if no preference is found
