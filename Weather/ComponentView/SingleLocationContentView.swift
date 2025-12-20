@@ -20,6 +20,7 @@ struct SingleLocationContentView: View {
             
         }
     }
+    
     var body: some View {
         ScrollView(.vertical,showsIndicators: false){
             VStack{
@@ -75,7 +76,7 @@ struct SingleLocationContentView: View {
                                                Spacer()
                                            }
                             
-                                WindMapView(locationWeather: locationWeather, isFullScreen: false)
+                            WindMapView(locationWeather: locationWeather, isFullScreen: false)
                                 
                         }
                         
@@ -116,8 +117,10 @@ struct SingleLocationContentView: View {
             .frame(maxWidth:.infinity)
             .padding(.bottom,isPresentedAsSheet ? 0 : 100)
             
+            
                         
                         }
+       
 //        .padding(.bottom, isPresentedAsSheet ? 0 : 80)
 //        .background(.gray)
     }
@@ -125,6 +128,7 @@ struct SingleLocationContentView: View {
 
 #Preview {
     let mockManager = WeatherManager()
+  
     SingleLocationContentView(isPresentedAsSheet: false, showingFullMap: .constant(false), locationWeather: WeatherModel.mock)
         .environmentObject(mockManager)
 }

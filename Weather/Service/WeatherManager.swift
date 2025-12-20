@@ -45,4 +45,7 @@ class WeatherManager: ObservableObject{
             weatherFavCities.append(newCity)
         }
     }
+    func fetchWeatherForGPS(lat: Double,lon: Double, completion: @escaping (Result<WeatherModel,WeatherAPIError>)->Void){
+        apiService.fetchWeatherByCoords(lat: lat, lon: lon, completion: completion)
+    }
 }

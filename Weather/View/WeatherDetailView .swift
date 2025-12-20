@@ -15,7 +15,8 @@ struct WeatherDetailView: View {
     @Environment(\.dismissModal) var dismissModal
     @Environment(\.dismiss) var dismiss
     
-    @State  var currentIndex: Int = 0
+//    @State  var currentIndex: Int = 0
+    @Binding var currentIndex: Int
     
     @State private var isScrollEnabled = true
     @State private var dragOffSet: CGFloat = 0
@@ -116,8 +117,10 @@ struct WeatherDetailView: View {
                                 TabView(selection:$currentIndex){
                                     ForEach(weatherManager.weatherFavCities.indices,id:\.self){ index in
                                         SingleLocationContentView(isPresentedAsSheet: isPresentedAsSheet, showingFullMap: $showingFullMap, locationWeather: weatherManager.weatherFavCities[index])
+                                            
                                         //                                    .padding(.bottom,80)
                                             .tag(index)
+                                            .id(index)
                                         
                                     }
                                     
@@ -152,9 +155,9 @@ struct WeatherDetailView: View {
                 }// Zstack of Swipable Content
             } // Group for sheet or full screen of WeatherDetailView
             if showingFullMap {
-                FullScreenMapView(locationWeather: weatherManager.weatherFavCities[currentIndex], isPresented: $showingFullMap)
-                    .transition(.identity)
-            }
+                            FullScreenMapView(locationWeather: weatherManager.weatherFavCities[currentIndex], isPresented: $showingFullMap)
+                                .transition(.identity)
+                        }
                 
             
         } // Zstack of etire view
@@ -196,6 +199,7 @@ extension EnvironmentValues {
 #Preview {
     @Previewable @Namespace var previewNamespace
     let mockManager = WeatherManager()
-    WeatherDetailView(weather: WeatherModel.mock, currentIndex: 0, isPresentedAsSheet: false, namespace: previewNamespace)
+    
+    WeatherDetailView(weather: WeatherModel.mock, currentIndex: .constant(0), isPresentedAsSheet: false, namespace: previewNamespace)
         .environmentObject(mockManager)
 }

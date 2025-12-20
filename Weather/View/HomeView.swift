@@ -21,6 +21,7 @@ struct HomeView: View {
     @State private var weatherStatic:WeatherModel = WeatherModel.mock
     @StateObject private var searchService = LocationSearchService()
     @Namespace var animation
+    @State var currentIndex: Int = 0
     
 //    var filteredSuggestion: [String]{
 //        if searchText.isEmpty{
@@ -82,11 +83,14 @@ struct HomeView: View {
                 List {
                     
                     
-                    ForEach(weatherManager.weatherFavCities){  weatherItem in
+                    ForEach(weatherManager.weatherFavCities.indices, id:\.self){  index in
+                        let weatherItem = weatherManager.weatherFavCities[index]
                         
                         WeatherCardView(weatherData: weatherItem,nameSpace: animation, isModal: selectedLocation?.name == weatherItem.name)
                             .onTapGesture {
+                                currentIndex = index
                                 withAnimation(.easeOut){
+                                    
                                     findCityCard(city: weatherItem.name)
                                 }
                                
@@ -95,23 +99,11 @@ struct HomeView: View {
                             }
                         
                         
-                        //                                                                    .padding()
-                        
-                        //                                                if let weather = weatherService.weatherData {
-                        //                                                                // Pass the single object directly to the view
-                        //
-                        //                                                            } else {
-                        //                                                                Text("Enter a city name to search for weather.")
-                        //                                                                    .foregroundColor(.gray)
-                        //                                                            }
-                        //
-                        //
+                
                     }
-                    //
-                    //
+                  
                     .onDelete(perform: deleteItem)
                     .listRowSeparator(.hidden)
-                    //                    }
                    
                     
                     
@@ -120,16 +112,17 @@ struct HomeView: View {
                 }
                 .refreshable{
                     weatherManager.refreshAllWeather()
+                    
                 }
                 .listStyle(.plain)
-                .blur(radius: isSearchFocused ? 10: 0)
-                .overlay {
-                    if isSearchFocused {
-                        Color.black.opacity(0.15).ignoresSafeArea(.all)
-                        // Note: You may not need the onTapGesture here,
-                        // as the system's "Cancel" button handles dismissal.
-                    }
-                }
+                .blur(radius: isSearchFocused ? 3 : 0)
+//                .overlay {
+//                    if isSearchFocused {
+//                        Color.black.opacity(0.15).ignoresSafeArea(.all)
+//                        // Note: You may not need the onTapGesture here,
+//                        // as the system's "Cancel" button handles dismissal.
+//                    }
+//                }
                 .navigationTitle("Weather")
                 
                 // search bar
@@ -155,15 +148,16 @@ struct HomeView: View {
                 .focused($isSearchFocused)
                 
             }
+            
             .sheet(isPresented: $showingSheet){
                 if let location = searchedLocation{
-                    WeatherDetailView(weather: location, /*currentIndex: 0,*/ isPresentedAsSheet: true, namespace: animation)
+                    WeatherDetailView(weather: location, currentIndex: $currentIndex,   isPresentedAsSheet: true, namespace: animation)
                 }else{
                     Text("Fetching Weather...")
                 }
             }
             if let location = selectedLocation {
-                WeatherDetailView(weather: location, isPresentedAsSheet: false, namespace: animation)
+                WeatherDetailView(weather: location, currentIndex: $currentIndex, isPresentedAsSheet: false, namespace: animation)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                     .environment(\.dismissModal){
                         withAnimation(.easeOut){

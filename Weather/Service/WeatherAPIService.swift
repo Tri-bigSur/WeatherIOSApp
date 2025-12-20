@@ -67,6 +67,57 @@ class WeatherAPIService: ObservableObject{
             }
         }.resume() // Start data task
     }
+//    func fetchWeatherByCoordinate(lat: Double, lon: Double) async throws -> WeatherModel{
+//        let urlString = "https://api.openweathermap.org/data/2.5/weather?lat=\(lat)&lon=\(lon)&appid=a8ddc0fda89401514ca69a95bab80629"
+//        guard let url = URL(string: urlString)else{
+//            throw URLError(.badURL)
+//        }
+//        let (data, response) = try await URLSession.shared.data(from: url)
+//        guard (response as? HTTPURLResponse)?.statusCode == 200 else {
+//            throw URLError(.badServerResponse)
+//        }
+//        let decodedData = try JSONDecoder().decode(WeatherModel.self, from: data)
+//        return decodedData
+//    }
+    func fetchWeatherByCoords(lat: Double, lon: Double, completion: @escaping(Result <WeatherModel,WeatherAPIError>) -> Void ){
+        let urlString = baseURL + "&lat=\(lat)&lon=\(lon)"
+        guard let url = URL(string: urlString) else {
+            completion(.failure(.invalidURL))
+            return
+        }
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            // Handle errors
+            if let error = error{
+                print("Network error: \(error.localizedDescription)")
+                completion(.failure(.netWorkError(error)))
+                return
+            }
+            // Handel Data parsing
+            guard let data = data else {
+                completion(.failure(.noData))
+                return
+            }
+            print(String(data: data, encoding: .utf8)!)
+            do{
+                // Decode data JSON
+                let decodedData = try JSONDecoder().decode(WeatherModel.self, from: data)
+                // UI updates (@Published changed happen on main thread)
+                completion(.success(decodedData))
+//                DispatchQueue.main.async {
+//                    self.weatherData = decodedData
+//                    print("Successfully loaded weather data of city.")
+//
+//                }
+                
+            }catch{
+                print("Decoding error: \(error)")
+                completion(.failure(.decodingError(error)))
+//                DispatchQueue.main.sync {
+//                    self.weatherData = nil
+//                }
+            }
+        }.resume() //
+    }
 
    
 

@@ -33,7 +33,7 @@ struct CustomPinView: View {
             PointerTrinangle()
                 .foregroundStyle(.primary)
                 .frame(width: 10,height: 10)
-                .offset(y:2)
+                .offset(y:6)
                 .rotationEffect(.degrees(180))
             Circle()
                 .frame(width: 10,height: 10)

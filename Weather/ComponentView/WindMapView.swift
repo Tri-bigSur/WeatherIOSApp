@@ -11,11 +11,13 @@ import CoreLocation
 struct WindMapView: View {
     let locationWeather: WeatherModel
     let isFullScreen: Bool
+    private let apiService = WeatherAPIService()
     @EnvironmentObject var weatherManager: WeatherManager
     @State private var region: MKCoordinateRegion
     @State private var annotationItems: [AnnotationItem] = []
     @State private var selectedAnnotationID: UUID?
-    
+    @State private var showingAnnotationSheet: Bool = false
+    @StateObject var locationManager = LocationManager()
     init(locationWeather:WeatherModel, isFullScreen: Bool){
         self.locationWeather = locationWeather
         self.isFullScreen = isFullScreen
@@ -43,10 +45,11 @@ struct WindMapView: View {
         let currentCoord = locationWeather.coord
         let itemCoord = item.coordinate
         let tolerance = 0.000001
-        return abs(currentCoord.lat - itemCoord.latitude) < tolerance && abs(currentCoord.lon - itemCoord.longitude) < tolerance 
+        return abs(currentCoord.lat - itemCoord.latitude) < tolerance && abs(currentCoord.lon - itemCoord.longitude) < tolerance
     }
     var body: some View {
                 
+        ZStack{
             Map(
                 coordinateRegion: $region ,
                 interactionModes: isFullScreen ? .all : [],
@@ -87,14 +90,71 @@ struct WindMapView: View {
                     
                 }
             )
-
+            if isFullScreen {
+                HStack{
+            
+                    Spacer()
+                    WeatherInfoCardView{
+                    VStack{
+                            Button(action:{
+                                locationManager.requestLocation()
+                            }){
+                                Image(systemName: "location.fill")
+                                    .font(.system(size: 18,weight: .semibold))
+                                    .foregroundStyle(.white)
+                                    
+                            }
+                         // List Annotation Item
+                        Divider()
+                            .frame(width: 15,height: 10)
+                        Button(action:{
+                            showingAnnotationSheet = true
+                        }){
+                            Image(systemName: "list.bullet")
+                                .font(.system(size: 20,weight: .semibold))
+                                .foregroundStyle(.white)
+                        }
+                            
+                           
+                        }
+                    .padding(10)
+                    }
+                    .padding(.top,40)
+                    
+                }
+                .frame(maxHeight:.infinity,alignment: .top)
+                .sheet(isPresented: $showingAnnotationSheet){
+                    AnnotationListView(annotationItems: annotationItems,selectedID: $selectedAnnotationID)
+                        .presentationDetents([.medium,.large])
+                }
+            }
+                
+            
+        }
         
-            .frame(width: isFullScreen ? .infinity : 280, height: isFullScreen ? .infinity : 280)
+        
+//        .frame(width: isFullScreen ? .infinity : 280, height: isFullScreen ? .infinity : 280)
+        .frame(width: isFullScreen ? nil : 280, height: isFullScreen ? nil : 280)
 //            .frame(minHeight: isFullScreen ? .infinity : 200, maxHeight: isFullScreen ? .infinity : 400)
 //            .frame(maxWidth: isFullScreen ? .infinity : 400, maxHeight: isFullScreen ? .infinity : 400)
 //            .frame(minHeight:0, maxHeight: 400)
 //                .ignoresSafeArea(isFullScreen ? .all : [],edges: .all)
-            
+            .onChange(of: locationManager.lastLocation){ newCoords in
+                if let coords = newCoords {
+                    updateMapForCurrentLocation(coords)
+                    
+                }
+                
+            }
+            .onChange(of: selectedAnnotationID){ newID in
+                if let selectedPin = annotationItems.first(where:{$0.id == newID}){
+                    withAnimation(.easeInOut){
+                        region.center = selectedPin.coordinate
+                        region.span = MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
+                    }
+                }
+                
+            }
             .onAppear{
                 updateLocation(from: weatherManager.weatherFavCities)
                 if let currentCity = annotationItems.first(where: {isCurrentLocation($0)}){
@@ -110,6 +170,8 @@ struct WindMapView: View {
 //        }
     }
 }
+               
+
 extension WindMapView{
     private func getThemeColor(for item: AnnotationItem) -> Color {
         if item.dt >= item.sunrise && item.dt <= item.sunset {
@@ -125,6 +187,37 @@ extension WindMapView{
         }else{
             return "moon.stars.fill"
         }
+    }
+    private func updateMapForCurrentLocation(_ coords: CLLocationCoordinate2D){
+        withAnimation(.easeInOut){
+            region = MKCoordinateRegion(center: coords, span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
+        }
+        weatherManager.fetchWeatherForGPS(lat: coords.latitude, lon: coords.longitude){
+            result in
+                switch result {
+                case .success (let weather):
+                    let gpsItem = AnnotationItem(coordinate: coords,
+                                                 name: "My Location",
+                                                 temp: weather.main.celcius,
+                                                 sunrise: weather.sys.sunrise,
+                                                 sunset: weather.sys.sunset,
+                                                 dt: weather.dt
+                    )
+                    weatherManager.weatherFavCities.append(weather)
+                    DispatchQueue.main.async {
+                        self.annotationItems.append(gpsItem)
+                        self.selectedAnnotationID = gpsItem.id
+                    }
+                   
+                case .failure(let error):
+                    print("Failed to fetch weather:\(error.localizedDescription)")
+                    
+                    
+                }
+            
+            
+        }
+        
     }
 }
 extension Color{
@@ -143,6 +236,7 @@ struct AnnotationItem: Identifiable {
 }
 
 #Preview {
+   
     WindMapView(locationWeather: WeatherModel.mock, isFullScreen: true)
         .environmentObject(WeatherManager())
 }

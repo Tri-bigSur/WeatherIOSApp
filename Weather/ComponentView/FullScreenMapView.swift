@@ -9,13 +9,13 @@ import SwiftUI
 import MapKit
 struct FullScreenMapView: View {
     let locationWeather: WeatherModel
+    @StateObject var locationManager = LocationManager()
     @State private var dragOffset: CGSize = .zero
     let dismissThreshold: CGFloat = 100
     @Binding var isPresented: Bool
 //    @Binding var mapRegion: MKCoordinateRegion
     var body: some View {
         ZStack{
-            
             WindMapView(locationWeather: locationWeather, isFullScreen: true)
             HStack{
                 
@@ -33,10 +33,26 @@ struct FullScreenMapView: View {
                 
                 
                 Spacer()
+//                WeatherInfoCardView{
+//                VStack{
+//                        Button(action:{
+//                            locationManager.requestLocation()
+//                        }){
+//                            Image(systemName: "location.fill")
+//                                .font(.system(size: 18,weight: .semibold))
+//                                .foregroundStyle(.white)
+//                                
+//                        }
+//                       
+//                    }
+//                .padding(10)
+//                }
                 
             }
             .frame(maxHeight:.infinity,alignment: .top)
+            
         }
+        
         .offset(y:dragOffset.height)
         .scaleEffect(scaleForDrag())
         .gesture(
@@ -72,6 +88,11 @@ struct FullScreenMapView: View {
     }
 }
 
+
+
+
 #Preview {
-    FullScreenMapView(locationWeather: WeatherModel.mock, isPresented: .constant(true))
+   
+    FullScreenMapView(locationWeather: WeatherModel.mock,isPresented: .constant(true))
+        .environmentObject(WeatherManager())
 }
