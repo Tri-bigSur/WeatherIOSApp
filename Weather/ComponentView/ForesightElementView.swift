@@ -18,15 +18,16 @@ struct ForesightElementView: View {
                 Spacer()
                 
             }
-            HStack{
+//            HStack{
                 VStack(alignment:.leading){
                     Text("\(locationWeather.visibilityInMiles) miles")
                         .modifier(TitleText())
                         .padding(.vertical,5)
+                    Spacer()
                     Text("Foresight is completely clear.")
                 }
-//                                    Spacer()
-            }
+
+//            }
         }
     }
 }

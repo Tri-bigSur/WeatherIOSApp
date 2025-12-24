@@ -6,10 +6,10 @@
 //
 
 import SwiftUI
-
+import CoreLocation
 struct FavoriteCityMaker: View {
-    let temp: Int
-    let cityName: String
+    let item: AnnotationItem
+    let mode: MapDisplayMode
     let themeColor: Color
     var body: some View {
         VStack{
@@ -19,14 +19,14 @@ struct FavoriteCityMaker: View {
                     .foregroundStyle(.primary)
                 Circle()
                     .frame(width: 38,height: 38)
-                    .foregroundStyle(themeColor)
+                    .foregroundStyle(mode == .temperature ? themeColor : Color.colorAnnotationWind)
                 VStack{
-                    Text("\(temp)")
+                    Text(mode == .temperature ? "\(item.temp)" : "\(item.windSpeed)")
                         .font(.system(size: 22,weight: .semibold))
                         .foregroundStyle(.white)
                 }
             }
-            Text(cityName)
+            Text(item.name)
                 .foregroundStyle(.primary)
                 .font(.system(size: 15))
         }
@@ -34,5 +34,5 @@ struct FavoriteCityMaker: View {
 }
 
 #Preview {
-    FavoriteCityMaker(temp: 20, cityName: "Thủ Thừa", themeColor: Color.nightDarkColor)
+    FavoriteCityMaker(item:AnnotationItem(coordinate: CLLocationCoordinate2D(latitude: 10.23, longitude: 19.23), name: "Tan An", temp: 20, sunrise: 323, sunset: 323, dt: 323, windSpeed: 6, gust: 2, windDeg: 56) , mode: .windSpeed, themeColor: Color.nightDarkColor)
 }

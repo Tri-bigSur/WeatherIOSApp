@@ -129,6 +129,7 @@ struct Wind: Codable{
     var mphGust: Int{
         return Int((gust ?? 0) * 2.237)
     }
+    
     let speed: Double
     let deg: Int
     let gust: Double?

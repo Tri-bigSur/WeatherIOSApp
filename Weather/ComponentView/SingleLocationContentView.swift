@@ -86,7 +86,7 @@ struct SingleLocationContentView: View {
                     }
                 }
                 
-                HStack{
+                HStack(alignment:.center){
                     ForesightElementView(locationWeather: locationWeather)
                     HumidityElementView(locationWeather: locationWeather)
                 
@@ -114,6 +114,7 @@ struct SingleLocationContentView: View {
                
 
             } // MARK: - General Vstack
+            .padding(.horizontal,isPresentedAsSheet ? 10 : 16)
             .frame(maxWidth:.infinity)
             .padding(.bottom,isPresentedAsSheet ? 0 : 100)
             
@@ -129,6 +130,6 @@ struct SingleLocationContentView: View {
 #Preview {
     let mockManager = WeatherManager()
   
-    SingleLocationContentView(isPresentedAsSheet: false, showingFullMap: .constant(false), locationWeather: WeatherModel.mock)
+    SingleLocationContentView(isPresentedAsSheet: true, showingFullMap: .constant(false), locationWeather: WeatherModel.mock)
         .environmentObject(mockManager)
 }

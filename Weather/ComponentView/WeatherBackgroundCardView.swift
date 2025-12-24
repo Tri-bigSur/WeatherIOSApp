@@ -14,19 +14,19 @@ struct WeatherInfoCardView<Content: View>: View {
         self.content = content()
     }
     var body: some View {
-        HStack{
+//        HStack{
             VStack{
                 content // the injected content goes here
                     .padding(5)
             }
-        }
-        .padding(.vertical,10)
+//        }
+//            .padding(5)
         .background(
             RoundedRectangle(cornerRadius: 15) // Creates the card shape
                 .fill(.ultraThinMaterial)
         )
         .colorScheme(.dark)
-        .padding(.horizontal,16)
+//        .padding(.horizontal,16)
     }
 }
 

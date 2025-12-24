@@ -49,6 +49,8 @@ struct WindCompassView: View {
                         Spacer()
                         Text("\(locationWeather.wind.deg)")
                             .modifier(LabelCardText())
+                        Text("\(getWindDirection(degrees: locationWeather.wind.deg))")
+                            .modifier(LabelCardText())
                     }
                 }
                 // MARK: - COMPASS

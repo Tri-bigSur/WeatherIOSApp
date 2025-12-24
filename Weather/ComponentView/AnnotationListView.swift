@@ -10,17 +10,19 @@ import CoreLocation
 struct AnnotationListView: View {
     @Environment(\.dismiss) var dismiss
     let annotationItems: [AnnotationItem]
+    let mode: MapDisplayMode
     @Binding var selectedID: UUID?
     var body: some View {
         VStack{
             HStack{
-                Image(systemName: "umbrella.fill")
+                Image(systemName: mode == .temperature ? "umbrella.fill" : "wind")
                     
                     .font(.system(size: 25,weight: .semibold))
                     
                 VStack{
-                    Text("Lượng Mưa")
+                    Text(mode == .temperature ? "Temperature" : "Wind Speed")
                         .font(.system(size: 18,weight: .semibold))
+                    
                     Text("Your Location")
                         .font(.system(size: 16))
                         .foregroundStyle(.secondary)
@@ -49,30 +51,56 @@ struct AnnotationListView: View {
 //                }
 //            }
             
-            VStack{
+//            VStack{
                 List(annotationItems, id: \.id) { item in
                     HStack{
-                        Text("\(item.name)")
-                            .font(.system(size: 18))
+                        VStack(alignment: .leading,spacing:6){
+                            Text("\(item.name)")
+                                .font(.system(size: 18))
+                            if mode == .windSpeed {
+                            Text( "\(item.windSpeed) mph, wind gust \(item.gust) mph")
+                                    .font(.system(size:15))
+                                    .foregroundStyle(.secondary)
+                                    .lineLimit(1)
+                            }
+                        }
+                        
                         Spacer()
-                        Text("\(item.temp)º")
+                        if mode == .windSpeed{
+                            Image(systemName:"arrow.up")
+                                .rotationEffect(.degrees(Double(item.windDeg + 180)))
+                                .foregroundStyle(.secondary)
+                        }
+                       
+                        Text(mode == .temperature ? "\(item.temp)º" : getWindDirection(degrees: item.windDeg))
                             .font(.system(size: 18))
                             .foregroundStyle(.secondary)
+                            .frame(width: 50)
     //                        .modifiers(LabelCardText())
                     }
+//                    .padding(.horizontal,15)
+                    
                     .onTapGesture {
                         selectedID = item.id
                         dismiss()
                     }
                 }
                 .listStyle(.plain)
+                
+                
+                
+                
+                
+                
+                
+                
             }
-            .padding(.horizontal,20)
             
-        }
+            
+//        }
     }
 }
 
 #Preview {
-    AnnotationListView(annotationItems: [AnnotationItem(coordinate: CLLocationCoordinate2D(latitude: 10.23, longitude: 19.23), name: "Tan An", temp: 20, sunrise: 323, sunset: 323, dt: 323),AnnotationItem(coordinate: CLLocationCoordinate2D(latitude: 10.23, longitude: 19.23), name: "Tan An", temp: 20, sunrise: 323, sunset: 323, dt: 323)], selectedID: .constant(nil))
+    AnnotationListView(annotationItems: [AnnotationItem(coordinate: CLLocationCoordinate2D(latitude: 10.23, longitude: 19.23), name: "Tan An", temp: 20, sunrise: 323, sunset: 323, dt: 323, windSpeed: 6, gust: 2, windDeg: 40),AnnotationItem(coordinate: CLLocationCoordinate2D(latitude: 10.23, longitude: 19.23), name: "Thủ Thừa", temp: 20, sunrise: 323, sunset: 323, dt: 323, windSpeed: 6, gust: 2, windDeg: 343)], mode: .windSpeed, selectedID: .constant(nil))
 }

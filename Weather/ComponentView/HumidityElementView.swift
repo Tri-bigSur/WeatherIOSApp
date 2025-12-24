@@ -24,9 +24,9 @@ struct HumidityElementView: View {
                     .modifier(TitleText())
                     .padding(.vertical,5)
                     
-                
+                Spacer()
                 Text("Dew point is 16º at this time.")
-                                    Spacer()
+                                    
             }
             
         }

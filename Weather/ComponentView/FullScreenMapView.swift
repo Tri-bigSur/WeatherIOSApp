@@ -26,7 +26,7 @@ struct FullScreenMapView: View {
                         Text("Done")
                             .font(.system(size: 18,weight: .semibold))
                             .foregroundStyle(.white)
-                            .padding(5)
+                            .padding(10)
                     }
                     
                 }
