@@ -47,7 +47,7 @@ struct WindCompassView: View {
                         Text("Dimension")
                             .modifier(AnnotationText())
                         Spacer()
-                        Text("\(locationWeather.wind.deg)")
+                        Text("\(locationWeather.wind.deg)º")
                             .modifier(LabelCardText())
                         Text("\(getWindDirection(degrees: locationWeather.wind.deg))")
                             .modifier(LabelCardText())

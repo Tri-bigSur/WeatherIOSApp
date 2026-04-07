@@ -102,14 +102,13 @@ struct SingleLocationContentView: View {
                     FeelingElementView_(LocationWeather: locationWeather)
                     UVElementView()
                         
-                        
-                        
-                        
-                        
                     
                 }
                 // MARK: - WIND SPEED
-                
+                HStack{
+                    HumidityElementView(locationWeather: locationWeather)
+                    SolarPathView(weatherLocation: locationWeather)
+                }
                 
                
 

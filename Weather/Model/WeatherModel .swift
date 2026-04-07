@@ -47,6 +47,9 @@ extension WeatherModel {
         return dateFormatter.string(from: utcDate)
         
     }
+    
+    
+    
     var currentIconCode: String {
         return self.weather.first?.icon ?? "01d"
     }

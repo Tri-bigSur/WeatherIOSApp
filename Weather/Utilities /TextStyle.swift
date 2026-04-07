@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct LabelCardText: ViewModifier{
+ struct LabelCardText: ViewModifier{
     func body(content: Content) -> some View {
         content
             .foregroundStyle(.secondary)

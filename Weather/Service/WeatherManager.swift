@@ -8,7 +8,16 @@
 import Foundation
 import Combine
 class WeatherManager: ObservableObject{
-    @Published var weatherFavCities: [WeatherModel] = []
+    @Published var weatherFavCities: [WeatherModel] = []{
+        didSet{
+            persistence.save(weatherFavCities)
+        }
+    }
+    private let persistence = CityPersistence()
+        init(){
+            self.weatherFavCities = persistence.load()
+        }
+    
     private let apiService = WeatherAPIService()
     
     func refreshAllWeather(){
@@ -48,4 +57,20 @@ class WeatherManager: ObservableObject{
     func fetchWeatherForGPS(lat: Double,lon: Double, completion: @escaping (Result<WeatherModel,WeatherAPIError>)->Void){
         apiService.fetchWeatherByCoords(lat: lat, lon: lon, completion: completion)
     }
+}
+class CityPersistence {
+    private let key = "favorite_cities_key"
+    func save(_ cities:[WeatherModel]){
+        if let encoded = try? JSONEncoder().encode(cities){
+            UserDefaults.standard.set(encoded, forKey: key)
+        }
+        
+    }
+    func load() -> [WeatherModel] {
+        if let data = UserDefaults.standard.data(forKey: key), let decoded = try? JSONDecoder().decode([WeatherModel].self,from: data){
+            return decoded
+        }
+        return []
+    }
+    
 }
