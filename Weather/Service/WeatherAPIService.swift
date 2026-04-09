@@ -24,10 +24,12 @@ class WeatherAPIService: ObservableObject{
     
     func fetchWeatherData(for cityName: String,completion: @escaping (Result<WeatherModel,WeatherAPIError>) -> Void){
         
-          guard let encodedCity = cityName.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) else {
+        
+          guard let encodedCity = eliminatePrefix(cityName).addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) else {
               print("Eror: Could not encode city name")
               return
           }
+        
         // Buid the final url
         let finalURLString = baseURL + "&q=\(encodedCity)"
         guard let url = URL(string: finalURLString) else {
@@ -66,6 +68,16 @@ class WeatherAPIService: ObservableObject{
 //                }
             }
         }.resume() // Start data task
+    }
+    func eliminatePrefix(_ name: String)-> String{
+        var cleanName = name
+        let prefixes = ["TP.","Tp.","Thành phố","Thành Phố"]
+        for prefix in prefixes {
+            if cleanName.hasPrefix(prefix) {
+                cleanName = cleanName.replacingOccurrences(of: prefix, with: "")
+            }
+        }
+        return cleanName.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 //    func fetchWeatherByCoordinate(lat: Double, lon: Double) async throws -> WeatherModel{
 //        let urlString = "https://api.openweathermap.org/data/2.5/weather?lat=\(lat)&lon=\(lon)&appid=a8ddc0fda89401514ca69a95bab80629"
